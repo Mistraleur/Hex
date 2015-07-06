@@ -1,2 +1,2 @@
 # Hex
-little program to generate hex exercises
+A little program to generate hex exercises
