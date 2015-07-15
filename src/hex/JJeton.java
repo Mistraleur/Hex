@@ -11,9 +11,9 @@ public class JJeton extends JLabel {
 	public JJeton(int column, int line, int joueur) {
 		super();
 		if (joueur == 1) {
-			setIcon(new ImageIcon("pion_blanc2.png"));
+			setIcon(new ImageIcon("files/pion_blanc2.png"));
 		} else if (joueur == -1) {
-			setIcon(new ImageIcon("pion_noir.png"));
+			setIcon(new ImageIcon("files/pion_noir.png"));
 		}
 		this.x =6 +  66*column + 100 + 33*line;
 		this.y =5 +  57*line + 92;

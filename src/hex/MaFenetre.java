@@ -20,7 +20,7 @@ public class MaFenetre extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		board = new JLabel();
-		board.setIcon(new ImageIcon("Plateau9.png"));
+		board.setIcon(new ImageIcon("files/Plateau9.png"));
 		board.setBounds(0, 0, 997, 673);
 		board.addMouseListener(new damier_listener());
 		
