@@ -4,17 +4,31 @@ public class Plateau {
 	
 	private int size;
 	private int[][] array;
-	private int a, b;
+	private int a, b, win;
 	
 	public Plateau(int size){
 		this.size = size;
 		array = new int[size][size];
 		a = 3;
 		b = -3;
+		win = 0;
 	}
 	
+	/* Constructor to clone a Plateau */
+	public Plateau(Plateau p){
+		this.size = p.size;
+		this.a = p.a;
+		this.b = p.b;
+		for(int i = 0; i<size; ++i){
+			for(int j = 0; j<size; ++j){
+				this.array[i][j] = p.array[i][j];
+			}
+		}
+	}
+	
+	
 	public boolean addMove(int line, int column, int player){
-		System.out.println("Move on (l,c): " + line + " " + column);
+		//System.out.println("Move on (l,c): " + line + " " + column);
 		
 		if(array[line][column] != 0){
 			return false;
@@ -34,14 +48,16 @@ public class Plateau {
 			
 			if(checkWinBlanc(line, column)){
 				System.out.println("C'est gagné !!!!!!!!!");
-				//TODO throw exception win !!
+				this.setWin(1);
+				return true;
+				//throw new ExceptionWinBlanc();
 			}
 			
 			//now propagation of the values
 			int min = getMin(line, column);
-			System.out.println("Propagation with min: " + min);
+			//System.out.println("Propagation with min: " + min);
 			propagateBlanc(line, column, min);
-			System.out.println("After propagation:\n" + this);
+			//System.out.println("After propagation:\n" + this);
 		}
 		else {// noir, donc de gauche a droite
 			if(column == 0){//bord gauche
@@ -57,14 +73,16 @@ public class Plateau {
 			
 			if(checkWinNoir(line, column)){
 				System.out.println("C'est gagné !!!!!!!!!");
-				//TODO throw exception win !!
+				this.setWin(-1);
+				return true;
+				//throw new ExceptionWinNoir();
 			}
 			
 			//now propagation of the values
 			int max = getMax(line, column);
-			System.out.println("Propagation with max: " + max);
+			//System.out.println("Propagation with max: " + max);
 			propagateNoir(line, column, max);
-			System.out.println("After propagation:\n" + this);
+			//System.out.println("After propagation:\n" + this);
 		}
 		
 		return true;
@@ -72,6 +90,13 @@ public class Plateau {
 	
 	private boolean checkWinBlanc(int line, int column){
 		boolean flag1 = false, flag2 = false;
+		
+		if(line == 0){
+			flag1 = true;
+		}
+		if(line == (size-1)){
+			flag2 = true;
+		}
 		
 		if(line > 0){
 			if(array[line-1][column] == 1){
@@ -209,6 +234,13 @@ public class Plateau {
 	private boolean checkWinNoir(int line, int column){
 		boolean flag1 = false, flag2 = false;
 		
+		if(column == 0){
+			flag1 = true;
+		}
+		if(column == (size-1)){
+			flag2 = true;
+		}
+		
 		if(line > 0){
 			if(array[line-1][column] == -1){
 				flag1 = true;
@@ -275,22 +307,22 @@ public class Plateau {
 		
 		int max = array[line][column];
 
-		if(array[line-1][column] < 0 && array[line-1][column] > max)
-			max = array[line-1][column];
-		if(array[line+1][column] < 0 && array[line+1][column] > max)
-			max = array[line+1][column];
+		if(array[line][column-1] < 0 && array[line][column-1] > max)
+			max = array[line][column-1];
+		if(array[line][column+1] < 0 && array[line][column+1] > max)
+			max = array[line][column+1];
 		
-		if(column > 0){
-			if(array[line][column-1] < 0 && array[line][column-1] > max)
-				max = array[line][column-1];
-			if(array[line+1][column-1] < 0 && array[line+1][column-1] > max)
-				max = array[line+1][column-1];
-		}
-		if(column < (size-1)){
-			if(array[line][column+1] < 0 && array[line][column+1] > max)
-				max = array[line][column+1];
+		if(line > 0){
+			if(array[line-1][column] < 0 && array[line-1][column] > max)
+				max = array[line-1][column];
 			if(array[line-1][column+1] < 0 && array[line-1][column+1] > max)
 				max = array[line-1][column+1];
+		}
+		if(line < (size-1)){
+			if(array[line+1][column] < 0 && array[line+1][column] > max)
+				max = array[line+1][column];
+			if(array[line+1][column-1] < 0 && array[line+1][column-1] > max)
+				max = array[line+1][column-1];
 		}
 		
 		return max;
@@ -348,6 +380,12 @@ public class Plateau {
 	}
 	
 	
+	static void print_cell(int column, int line){
+		char c = (char)(65+column);
+		System.out.println(c + "" + (line+1) + " " + column + "" + line);
+	}
+	
+	
 	public String toString(){
 		String s = "";
 		int i,j;
@@ -371,4 +409,22 @@ public class Plateau {
 		return s;
 	}
 
+	public int getWin() {
+		return win;
+	}
+
+	public void setWin(int win) {
+		this.win = win;
+	}
+
+	public void reset(){
+		array = new int[size][size];
+		a = 3;
+		b = -3;
+		win = 0;
+	}
+	
 }
+
+
+

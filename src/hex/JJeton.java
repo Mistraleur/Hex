@@ -7,7 +7,7 @@ public class JJeton extends JLabel {
 	
 	int x, y;
 	
-	/** Constructeur */
+	/** Constructor */
 	public JJeton(int column, int line, int joueur) {
 		super();
 		if (joueur == 1) {
@@ -17,9 +17,6 @@ public class JJeton extends JLabel {
 		}
 		this.x =6 +  66*column + 100 + 33*line;
 		this.y =5 +  57*line + 92;
-		
-		//line = (ev.getY() - 92)/58;
-		//column = (ev.getX() - 100 - line*33)/66;
 		
 		setBounds(x, y, 66, 58);
 	}

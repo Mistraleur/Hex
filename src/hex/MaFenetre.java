@@ -2,13 +2,14 @@ package hex;
 
 import java.awt.Font;
 import java.awt.event.*;
-
 import javax.swing.*;
+
 
 public class MaFenetre extends JFrame {
 	
 	private JPanel panneau;
-	private JLabel board, t1, t2, tn, tb;
+	private JLabel board, t1;
+	private JButton isWinBlanc, isWinNoir, again;
 	private int column, line;
 	private int player = 1;
 	private Plateau p;
@@ -30,34 +31,43 @@ public class MaFenetre extends JFrame {
 		board.setBounds(0, 0, 997, 673);
 		board.addMouseListener(new damier_listener());
 		
-		/*t1 = new JLabel("C'est à");
+		
+		t1 = new JLabel("C'est à Blanc de jouer");
 		t1.setFont(new Font("Serif", Font.PLAIN, 25));
-		t1.setBounds(730, 10, 100, 50);
+		t1.setBounds(710, 10, 400, 90);
 		
-		t2 = new JLabel("blanc de jouer");
-		t2.setFont(new Font("Serif", Font.PLAIN, 25));
-		t2.setBounds(720, 30, 1000, 50);
+		again = new JButton("Play again?");
+		again.setFont(new Font("Serif", Font.PLAIN, 25));
+		again.setBounds(750, 110, 190, 40);
+		again.addActionListener(new again_listener());
 		
-		tn = new JLabel("NOIR");
-		tn.setFont(new Font("Serif", Font.PLAIN, 25));
-		tn.setBounds(950, 50, 100, 50);
-		*/
 		
 		panneau = new JPanel();
 		panneau.setLayout(null);
-		//panneau.add(t1);
-		//panneau.add(t2);
-		//panneau.add(tn);
+		panneau.add(t1);
+		panneau.add(again);
 		panneau.add(board);
 		
+		
 		this.add(panneau);
-		
 		setVisible(true);
-		
-		
+	}
+	
+	private void printWin(){
+		t1.setText((p.getWin() < 0) ? "  Noir a gagné !" : "  Blanc a gagné !");
 	}
 	
 	
+	private class again_listener implements ActionListener {
+
+		public void actionPerformed(ActionEvent arg0) {
+			board.removeAll();
+			t1.setText("C'est à Blanc de jouer");
+			repaint();
+			p.reset();
+		}
+		
+	}
 	
 	private class damier_listener extends MouseAdapter {
 		
@@ -65,6 +75,7 @@ public class MaFenetre extends JFrame {
 		public void mouseClicked(MouseEvent ev) {
 			//System.out.println(ev.getX() + "  " + ev.getY());
 				
+			if(p.getWin() == 0){ // meaning no winner yet
 				line = (ev.getY() - 92)/58;
 				column = (ev.getX() - 100 - line*33)/66;
 				
@@ -72,21 +83,31 @@ public class MaFenetre extends JFrame {
 					return;
 				}
 				
-				//Hex.print_cell(column, line);
-				//System.out.println(column + " " + line);
-				p.addMove(line, column, player);
-				board.setVisible(false);
+				if(!p.addMove(line, column, player)){ //if move non valid do nothing
+					return;
+				}
 				
-				panneau.add(new JJeton(column, line, player));
+				board.setVisible(false);
+				board.add(new JJeton(column, line, player));
 				panneau.add(board);
 				repaint();
 				board.setVisible(true);
 				
-				player = -player;
-		}
+				if(p.getWin() != 0){
+					printWin();
+				}
+				else {
+					player = -player;
+					t1.setText((player < 0) ? "C'est à Noir de jouer" : "C'est à Blanc de jouer");
+				}
+				
+			}
+			else{ //there is a winner, the board is blocked
+				
+			}
+		}//end mouseclicked
 		
-
-	}
+	}//end damierlistened
 	
 
 }
