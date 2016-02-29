@@ -1,10 +1,12 @@
 package hex;
 
+import java.io.*;
+
 public class Plateau {
 	
-	private int size;
-	private int[][] array;
-	private int a, b, win;
+	public int size;
+	public int[][] array;
+	public int a, b, win, next_player;
 	
 	public Plateau(int size){
 		this.size = size;
@@ -12,6 +14,7 @@ public class Plateau {
 		a = 3;
 		b = -3;
 		win = 0;
+		next_player = 1;
 	}
 	
 	/* Constructor to clone a Plateau */
@@ -19,11 +22,61 @@ public class Plateau {
 		this.size = p.size;
 		this.a = p.a;
 		this.b = p.b;
+		this.next_player = p.next_player;
+		this.array = new int[size][size];
+		
 		for(int i = 0; i<size; ++i){
 			for(int j = 0; j<size; ++j){
 				this.array[i][j] = p.array[i][j];
 			}
 		}
+	}
+	
+	
+	public boolean readState(String file){
+		try {
+			DataInputStream f = new DataInputStream(new FileInputStream(file));
+			a = f.readInt();
+			b = f.readInt();
+			next_player = f.readInt();
+			win = f.readInt();
+			
+			for(int i = 0; i<size; ++i){
+				for(int j = 0; j<size; ++j){
+					array[i][j] = f.readInt();
+				}
+			}
+			
+			f.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	
+	public boolean writeState(String file){
+		try {
+			DataOutputStream f = new DataOutputStream(new FileOutputStream(file));
+			f.writeInt(a);
+			f.writeInt(b);
+			f.writeInt(next_player);
+			f.writeInt(win);
+			
+			for(int i = 0; i<size; ++i){
+				for(int j = 0; j<size; ++j){
+					f.writeInt(array[i][j]);
+				}
+			}
+			
+			f.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	
@@ -47,8 +100,8 @@ public class Plateau {
 			}
 			
 			if(checkWinBlanc(line, column)){
-				System.out.println("C'est gagné !!!!!!!!!");
-				this.setWin(1);
+				//System.out.println("C'est gagné !!!!!!!!!");
+				win = 1;
 				return true;
 				//throw new ExceptionWinBlanc();
 			}
@@ -72,8 +125,8 @@ public class Plateau {
 			}
 			
 			if(checkWinNoir(line, column)){
-				System.out.println("C'est gagné !!!!!!!!!");
-				this.setWin(-1);
+				//System.out.println("C'est gagné !!!!!!!!!");
+				win = -1;
 				return true;
 				//throw new ExceptionWinNoir();
 			}
@@ -85,6 +138,7 @@ public class Plateau {
 			//System.out.println("After propagation:\n" + this);
 		}
 		
+		this.next_player = -player;
 		return true;
 	}
 	
@@ -374,18 +428,6 @@ public class Plateau {
 	}
 	
 	
-	/** Retourne la largeur du plateau */
-	public int getSize() {
-		return size;
-	}
-	
-	
-	static void print_cell(int column, int line){
-		char c = (char)(65+column);
-		System.out.println(c + "" + (line+1) + " " + column + "" + line);
-	}
-	
-	
 	public String toString(){
 		String s = "";
 		int i,j;
@@ -400,21 +442,10 @@ public class Plateau {
 				else {
 					s += " " + array[i][j] + " ";
 				}
-				
 			}
 			s += '\n';
-			
 		}
-		
 		return s;
-	}
-
-	public int getWin() {
-		return win;
-	}
-
-	public void setWin(int win) {
-		this.win = win;
 	}
 
 	public void reset(){
@@ -423,7 +454,11 @@ public class Plateau {
 		b = -3;
 		win = 0;
 	}
-	
+
+	public int[][] getArray() {
+		return array;
+	}
+
 }
 
 
