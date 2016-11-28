@@ -12,11 +12,11 @@ public class MaFenetre extends JFrame {
 	
 	private JPanel panneau;
 	private JLabel board, t1;
-	private JButton findWin, isWinBlanc, isWinNoir, again, save, read;
+	private JButton findWinThreaded, findWin, isWinBlanc, isWinNoir, again, save, read;
 	private JJeton last;
 	private int column, line, size;
 	private int player = 1;
-	private boolean locked, algo;
+	private boolean locked, algo, thr;
 	private Plateau p;
 	private Algo a;
 	
@@ -32,6 +32,7 @@ public class MaFenetre extends JFrame {
 		this.p = new Plateau(size);
 		this.locked = false;
 		this.algo = false;
+		this.thr = false;
 		
 		this.bt = new ButtonListener();
 		
@@ -73,6 +74,11 @@ public class MaFenetre extends JFrame {
 		undo.setBounds(20, 450, 200, 40);
 		undo.addActionListener(bt);
 		*/
+		
+		findWinThreaded = new JButton("FindWinThreaded ?");
+		findWinThreaded.setBounds(20, 450, 200, 40);
+		findWinThreaded.addActionListener(bt);
+		
 		findWin = new JButton("FindWin ?");
 		findWin.setBounds(20, 500, 200, 40);
 		findWin.addActionListener(bt);
@@ -89,6 +95,7 @@ public class MaFenetre extends JFrame {
 		panneau.add(read);
 		panneau.add(save);
 		//panneau.add(undo);
+		panneau.add(findWinThreaded);
 		panneau.add(findWin);
 		panneau.add(isWinBlanc);
 		panneau.add(isWinNoir);
@@ -169,6 +176,12 @@ public class MaFenetre extends JFrame {
 			}*/
 			else if (ev.getSource() == findWin){
 				algo = true;
+				System.out.println("Waiting for click [lmin,cmin] and [lmax,cmax]");
+				a = new Algo();
+			}
+			else if (ev.getSource() == findWinThreaded){
+				algo = true;
+				thr = true;
 				System.out.println("Waiting for click [lmin,cmin] and [lmax,cmax]");
 				a = new Algo();
 			}
@@ -254,9 +267,17 @@ public class MaFenetre extends JFrame {
 					a.lmax = line;
 					a.cmax = column;
 					locked = true;
-					a.findWin(p, player);
+					if(thr){
+						a.findWinThreaded(p, player);
+						thr = false;
+					}
+					else{
+						a.findWin(p, player);
+					}
+					
 					locked = false;
 					algo = false;
+					
 				}
 				return;
 			}
